@@ -25,6 +25,7 @@ using de4dot.blocks;
 namespace de4dot.code.deobfuscators.CryptoObfuscator {
 	class StringDecrypter {
 		ModuleDefMD module;
+		Deobfuscator.Options options;
 		EmbeddedResource stringResource;
 		TypeDef stringDecrypterType;
 		MethodDef stringDecrypterMethod;
@@ -34,7 +35,11 @@ namespace de4dot.code.deobfuscators.CryptoObfuscator {
 		public TypeDef Type => stringDecrypterType;
 		public MethodDef Method => stringDecrypterMethod;
 		public EmbeddedResource Resource => stringResource;
-		public StringDecrypter(ModuleDefMD module) => this.module = module;
+
+		public StringDecrypter(ModuleDefMD module, Deobfuscator.Options options) {
+			this.module = module;
+			this.options = options;
+		}
 
 		public void Find() {
 			if (!FindStringDecrypterType(out var type, out var method))
@@ -95,8 +100,14 @@ namespace de4dot.code.deobfuscators.CryptoObfuscator {
 			foreach (var type in module.Types) {
 				if (type.IsPublic)
 					continue;
-				if (type.Fields.Count != 1)
-					continue;
+				if (options.IsVersion5()) {
+					if (type.Fields.Count != 2)
+						continue;
+				}
+				else {
+					if (type.Fields.Count != 1)
+						continue;
+				}
 				if (DotNetUtils.FindFieldType(type, "System.Byte[]", true) == null)
 					continue;
 				if (type.Methods.Count != 2 && type.Methods.Count != 3)

@@ -55,17 +55,17 @@ namespace de4dot.cui {
 				SearchDirs = new List<SearchDir>();
 				DefaultStringDecrypterMethods = new List<string>();
 				RenamerFlags = RenamerFlags.RenameNamespaces |
-						RenamerFlags.RenameTypes |
-						RenamerFlags.RenameProperties |
-						RenamerFlags.RenameEvents |
-						RenamerFlags.RenameFields |
-						RenamerFlags.RenameMethods |
-						RenamerFlags.RenameMethodArgs |
-						RenamerFlags.RenameGenericParams |
-						RenamerFlags.RestorePropertiesFromNames |
-						RenamerFlags.RestoreEventsFromNames |
-						RenamerFlags.RestoreProperties |
-						RenamerFlags.RestoreEvents;
+				               RenamerFlags.RenameTypes |
+				               RenamerFlags.RenameProperties |
+				               RenamerFlags.RenameEvents |
+				               RenamerFlags.RenameFields |
+				               RenamerFlags.RenameMethods |
+				               RenamerFlags.RenameMethodArgs |
+				               RenamerFlags.RenameGenericParams |
+				               RenamerFlags.RestorePropertiesFromNames |
+				               RenamerFlags.RestoreEventsFromNames |
+				               RenamerFlags.RestoreProperties |
+				               RenamerFlags.RestoreEvents;
 				RenameSymbols = true;
 				ControlFlowDeobfuscation = true;
 			}
@@ -113,7 +113,8 @@ namespace de4dot.cui {
 					deobfuscatorContext.Clear();
 				}
 				catch (Exception ex) {
-					Logger.Instance.Log(false, null, LoggerEvent.Warning, "Could not deobfuscate {0}. Use -v to see stack trace", file.Filename);
+					Logger.Instance.Log(false, null, LoggerEvent.Warning,
+						"Could not deobfuscate {0}. Use -v to see stack trace", file.Filename);
 					Program.PrintStackTrace(ex, LoggerEvent.Verbose);
 				}
 				finally {
@@ -143,7 +144,7 @@ namespace de4dot.cui {
 		IEnumerable<IObfuscatedFile> LoadAllFiles(bool onlyScan) {
 			var loader = new DotNetFileLoader(new DotNetFileLoader.Options {
 				ModuleContext = options.ModuleContext,
-				PossibleFiles  = options.Files,
+				PossibleFiles = options.Files,
 				SearchDirs = options.SearchDirs,
 				CreateDeobfuscators = () => CreateDeobfuscators(),
 				DefaultStringDecrypterType = options.DefaultStringDecrypterType,
@@ -199,9 +200,11 @@ namespace de4dot.cui {
 			bool Add(IObfuscatedFile file, bool skipUnknownObfuscator, bool isFromPossibleFiles) {
 				var key = Utils.GetFullPath(file.Filename);
 				if (allFiles.ContainsKey(key)) {
-					Logger.Instance.Log(false, null, LoggerEvent.Warning, "Ingoring duplicate file: {0}", file.Filename);
+					Logger.Instance.Log(false, null, LoggerEvent.Warning, "Ingoring duplicate file: {0}",
+						file.Filename);
 					return false;
 				}
+
 				allFiles[key] = true;
 
 				int oldIndentLevel = Logger.Instance.IndentLevel;
@@ -210,23 +213,26 @@ namespace de4dot.cui {
 					file.Load(options.CreateDeobfuscators());
 				}
 				catch (NotSupportedException) {
-					return false;	// Eg. unsupported architecture
+					return false; // Eg. unsupported architecture
 				}
 				catch (BadImageFormatException) {
 					if (isFromPossibleFiles)
-						Logger.Instance.Log(false, null, LoggerEvent.Warning, "The file isn't a .NET PE file: {0}", file.Filename);
-					return false;	// Not a .NET file
+						Logger.Instance.Log(false, null, LoggerEvent.Warning, "The file isn't a .NET PE file: {0}",
+							file.Filename);
+					return false; // Not a .NET file
 				}
 				catch (EndOfStreamException) {
 					return false;
 				}
 				catch (IOException) {
 					if (isFromPossibleFiles)
-						Logger.Instance.Log(false, null, LoggerEvent.Warning, "The file isn't a .NET PE file: {0}", file.Filename);
-					return false;	// Not a .NET file
+						Logger.Instance.Log(false, null, LoggerEvent.Warning, "The file isn't a .NET PE file: {0}",
+							file.Filename);
+					return false; // Not a .NET file
 				}
 				catch (Exception ex) {
-					Logger.Instance.Log(false, null, LoggerEvent.Warning, "Could not load file ({0}): {1}", ex.GetType(), file.Filename);
+					Logger.Instance.Log(false, null, LoggerEvent.Warning, "Could not load file ({0}): {1}",
+						ex.GetType(), file.Filename);
 					return false;
 				}
 				finally {
@@ -259,12 +265,13 @@ namespace de4dot.cui {
 				}
 				catch (ArgumentException) {
 				}
+
 				if (ok) {
 					foreach (var filename in DoDirectoryInfo(searchDir, di)) {
 						var obfuscatedFile = CreateObfuscatedFile(searchDir, filename);
 						if (obfuscatedFile != null)
 							yield return obfuscatedFile;
-					}					
+					}
 				}
 			}
 
@@ -303,6 +310,7 @@ namespace de4dot.cui {
 				catch (System.Security.SecurityException) {
 					return new List<string>();
 				}
+
 				return RecursiveAdd(searchDir, fsinfos);
 			}
 
@@ -334,7 +342,8 @@ namespace de4dot.cui {
 						throw new UserException($"Input and output filename is the same: {fileOptions.Filename}");
 				}
 
-				var obfuscatedFile = new ObfuscatedFile(fileOptions, options.ModuleContext, options.AssemblyClientFactory);
+				var obfuscatedFile =
+					new ObfuscatedFile(fileOptions, options.ModuleContext, options.AssemblyClientFactory);
 				if (Add(obfuscatedFile, searchDir.SkipUnknownObfuscators, false))
 					return obfuscatedFile;
 				obfuscatedFile.Dispose();

@@ -34,12 +34,17 @@ namespace de4dot.code.deobfuscators.CryptoObfuscator {
 		BoolOption inlineMethods;
 		BoolOption fixLdnull;
 
+		StringOption version;
+
+		public const string VER5 = "5.x";
+
 		public DeobfuscatorInfo()
 			: base(DEFAULT_REGEX) {
 			removeTamperProtection = new BoolOption(null, MakeArgName("tamper"), "Remove tamper protection code", true);
 			decryptConstants = new BoolOption(null, MakeArgName("consts"), "Decrypt constants", true);
 			inlineMethods = new BoolOption(null, MakeArgName("inline"), "Inline short methods", true);
 			fixLdnull = new BoolOption(null, MakeArgName("ldnull"), "Restore ldnull instructions", true);
+			version = new StringOption(null, MakeArgName("version"), "Specified Obfuscator version",VER5);
 		}
 
 		public override string Name => THE_NAME;
@@ -52,6 +57,7 @@ namespace de4dot.code.deobfuscators.CryptoObfuscator {
 				DecryptConstants = decryptConstants.Get(),
 				InlineMethods = inlineMethods.Get(),
 				FixLdnull = fixLdnull.Get(),
+				Version = version.Get(),
 			});
 
 		protected override IEnumerable<Option> GetOptionsInternal() =>
@@ -60,6 +66,7 @@ namespace de4dot.code.deobfuscators.CryptoObfuscator {
 				decryptConstants,
 				inlineMethods,
 				fixLdnull,
+				version
 			};
 	}
 
@@ -91,6 +98,9 @@ namespace de4dot.code.deobfuscators.CryptoObfuscator {
 			public bool DecryptConstants { get; set; }
 			public bool InlineMethods { get; set; }
 			public bool FixLdnull { get; set; }
+			public string Version { get; set; }
+
+			public bool IsVersion5() => Version == DeobfuscatorInfo.VER5;
 		}
 
 		public override string Type => DeobfuscatorInfo.THE_TYPE;
@@ -145,11 +155,11 @@ namespace de4dot.code.deobfuscators.CryptoObfuscator {
 			methodsDecrypter.Find();
 			proxyCallFixer = new ProxyCallFixer(module);
 			proxyCallFixer.FindDelegateCreator();
-			stringDecrypter = new StringDecrypter(module);
+			stringDecrypter = new StringDecrypter(module,options);
 			stringDecrypter.Find();
 			tamperDetection = new TamperDetection(module);
 			tamperDetection.Find();
-			constantsDecrypter = new ConstantsDecrypter(module, initializedDataCreator);
+			constantsDecrypter = new ConstantsDecrypter(module, initializedDataCreator,options);
 			constantsDecrypter.Find();
 			foundObfuscatorUserString = Utils.StartsWith(module.ReadUserString(0x70000001), "\u0011\"3D9B94A98B-76A8-4810-B1A0-4BE7C4F9C98D", StringComparison.Ordinal);
 		}
@@ -183,7 +193,7 @@ namespace de4dot.code.deobfuscators.CryptoObfuscator {
 
 		public override void DeobfuscateBegin() {
 			base.DeobfuscateBegin();
-
+			
 			resourceDecrypter = new ResourceDecrypter(module, DeobfuscatedFile);
 			resourceResolver = new ResourceResolver(module, resourceDecrypter);
 			assemblyResolver = new AssemblyResolver(module);

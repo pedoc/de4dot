@@ -99,15 +99,20 @@ namespace de4dot.code {
 		public ModuleDefMD ModuleDefMD => module;
 		public INameChecker NameChecker => deob;
 		public bool RenameResourcesInCode => deob.TheOptions.RenameResourcesInCode;
-		public bool RemoveNamespaceWithOneType => (deob.RenamingOptions & RenamingOptions.RemoveNamespaceIfOneType) != 0;
+
+		public bool RemoveNamespaceWithOneType =>
+			(deob.RenamingOptions & RenamingOptions.RemoveNamespaceIfOneType) != 0;
+
 		public bool RenameResourceKeys => (deob.RenamingOptions & RenamingOptions.RenameResourceKeys) != 0;
 		public IDeobfuscator Deobfuscator => deob;
+
 		public IDeobfuscatorContext DeobfuscatorContext {
 			get => deobfuscatorContext;
 			set => deobfuscatorContext = value;
 		}
 
-		public ObfuscatedFile(Options options, ModuleContext moduleContext, IAssemblyClientFactory assemblyClientFactory) {
+		public ObfuscatedFile(Options options, ModuleContext moduleContext,
+			IAssemblyClientFactory assemblyClientFactory) {
 			this.assemblyClientFactory = assemblyClientFactory;
 			this.options = options;
 			userStringDecrypterMethods = options.StringDecrypterMethods.Count > 0;
@@ -122,7 +127,8 @@ namespace de4dot.code {
 		}
 
 		string GetDefaultNewFilename() {
-			string newFilename = Path.GetFileNameWithoutExtension(options.Filename) + "-cleaned" + Path.GetExtension(options.Filename);
+			string newFilename = Path.GetFileNameWithoutExtension(options.Filename) + "-cleaned" +
+			                     Path.GetExtension(options.Filename);
 			return Path.Combine(Path.GetDirectoryName(options.Filename), newFilename);
 		}
 
@@ -169,6 +175,7 @@ namespace de4dot.code {
 					}
 					catch {
 					}
+
 					if (unpackedData == null)
 						continue;
 
@@ -177,13 +184,15 @@ namespace de4dot.code {
 						module = assemblyModule.Load(unpackedData);
 					}
 					catch {
-						Logger.w("Could not load unpacked data. File: {0}, deobfuscator: {0}", peImage.Filename ?? "(unknown filename)", deob.TypeLong);
+						Logger.w("Could not load unpacked data. File: {0}, deobfuscator: {0}",
+							peImage.Filename ?? "(unknown filename)", deob.TypeLong);
 						continue;
 					}
 					finally {
 						if (oldModule != null)
 							oldModule.Dispose();
 					}
+
 					this.deob = deob;
 					return true;
 				}
@@ -224,7 +233,6 @@ namespace de4dot.code {
 		}
 
 		void DetectObfuscator(IEnumerable<IDeobfuscator> deobfuscators) {
-
 			// The deobfuscators may call methods to deobfuscate control flow and decrypt
 			// strings (statically) in order to detect the obfuscator.
 			if (!options.ControlFlowDeobfuscation || options.StringDecrypterType == DecrypterType.None)
@@ -261,7 +269,7 @@ namespace de4dot.code {
 			IDeobfuscator detected = null;
 			int detectVal = 0;
 			foreach (var deob in deobfuscators) {
-				this.deob = deob;	// So we can call deob.CanInlineMethods in deobfuscate()
+				this.deob = deob; // So we can call deob.CanInlineMethods in deobfuscate()
 				int val;
 				try {
 					val = deob.Detect();
@@ -269,6 +277,7 @@ namespace de4dot.code {
 				catch {
 					val = deob.Type == "un" ? 1 : 0;
 				}
+
 				Logger.v("{0,3}: {1}", val, deob.TypeLong);
 				if (val > 0 && deob.Type != "un")
 					allDetected.Add(deob);
@@ -277,6 +286,7 @@ namespace de4dot.code {
 					detected = deob;
 				}
 			}
+
 			deob = null;
 
 			if (allDetected.Count > 1) {
@@ -296,9 +306,9 @@ namespace de4dot.code {
 			// Always preserve tokens if it's an unknown obfuscator
 			if (deob.Type == "un") {
 				mdFlags |= MetadataFlags.PreserveRids |
-						MetadataFlags.PreserveUSOffsets |
-						MetadataFlags.PreserveBlobOffsets |
-						MetadataFlags.PreserveExtraSignatureData;
+				           MetadataFlags.PreserveUSOffsets |
+				           MetadataFlags.PreserveBlobOffsets |
+				           MetadataFlags.PreserveExtraSignatureData;
 			}
 
 			return mdFlags;
@@ -309,7 +319,8 @@ namespace de4dot.code {
 			var mdFlags = GetMetadataFlags();
 			if (!options.ControlFlowDeobfuscation)
 				mdFlags |= MetadataFlags.KeepOldMaxStack;
-			assemblyModule.Save(options.NewFilename, mdFlags, new PrintNewTokens(module, deob as IModuleWriterListener));
+			assemblyModule.Save(options.NewFilename, mdFlags,
+				new PrintNewTokens(module, deob as IModuleWriterListener));
 		}
 
 		IList<MethodDef> GetAllMethods() {
@@ -359,7 +370,7 @@ namespace de4dot.code {
 			Logger.n("Cleaning {0}", options.Filename);
 			InitAssemblyClient();
 
-			for (int i = 0; ; i++) {
+			for (int i = 0;; i++) {
 				byte[] fileData = null;
 				DumpedMethods dumpedMethods = null;
 				if (!deob.GetDecryptedModule(i, ref fileData, ref dumpedMethods))
@@ -376,9 +387,11 @@ namespace de4dot.code {
 			Logger.v("Reloading decrypted assembly (original filename: {0})", Filename);
 			simpleDeobfuscatorFlags.Clear();
 			using (var oldModule = module) {
-				module = assemblyModule.Reload(newModuleData, CreateDumpedMethodsRestorer(dumpedMethods), deob as IStringDecrypter);
+				module = assemblyModule.Reload(newModuleData, CreateDumpedMethodsRestorer(dumpedMethods),
+					deob as IStringDecrypter);
 				deob = deob.ModuleReloaded(module);
 			}
+
 			InitializeDeobfuscator();
 			deob.DeobfuscatedFile = this;
 			UpdateDynamicStringInliner();
@@ -443,7 +456,8 @@ namespace de4dot.code {
 				foreach (var method in type.Methods) {
 					if (!method.IsStatic)
 						continue;
-					if (method.MethodSig.GetRetType().GetElementType() != ElementType.String && method.MethodSig.GetRetType().GetElementType() != ElementType.Object)
+					if (method.MethodSig.GetRetType().GetElementType() != ElementType.String &&
+					    method.MethodSig.GetRetType().GetElementType() != ElementType.Object)
 						continue;
 					if (methodName != null && methodName != method.Name)
 						continue;
@@ -462,7 +476,8 @@ namespace de4dot.code {
 						}
 					}
 
-					Logger.v("Adding string decrypter; token: {0:X8}, method: {1}", method.MDToken.ToInt32(), Utils.RemoveNewlines(method.FullName));
+					Logger.v("Adding string decrypter; token: {0:X8}, method: {1}", method.MDToken.ToInt32(),
+						Utils.RemoveNewlines(method.FullName));
 					tokens.Add(method.MDToken.ToInt32());
 				}
 			}
@@ -529,6 +544,7 @@ namespace de4dot.code {
 				savedMethodBodies.RestoreAll();
 				savedMethodBodies = null;
 			}
+
 			deob.DeobfuscatedFile = null;
 
 			if (!options.ControlFlowDeobfuscation) {
@@ -559,14 +575,15 @@ namespace de4dot.code {
 						method.Body = new CilBody();
 					}
 					else {
-						Logger.w("Could not deobfuscate method {0:X8}. Hello, E.T.: {1}",	// E.T. = exception type
-								method.MDToken.ToInt32(),
-								ex.GetType());
+						Logger.w("Could not deobfuscate method {0:X8}. Hello, E.T.: {1}", // E.T. = exception type
+							method.MDToken.ToInt32(),
+							ex.GetType());
 					}
 				}
 				finally {
 					Logger.Instance.IndentLevel = oldIndentLevel;
 				}
+
 				RemoveNoInliningAttribute(method);
 
 				if (isVerbose)
@@ -589,7 +606,8 @@ namespace de4dot.code {
 			return (GetMetadataFlags() & MetadataFlags.PreserveStandAloneSigRids) == 0;
 		}
 
-		void Deobfuscate(MethodDef method, BlocksCflowDeobfuscator cflowDeobfuscator, MethodPrinter methodPrinter, bool isVerbose, bool isVV) {
+		void Deobfuscate(MethodDef method, BlocksCflowDeobfuscator cflowDeobfuscator, MethodPrinter methodPrinter,
+			bool isVerbose, bool isVV) {
 			if (!HasNonEmptyBody(method))
 				return;
 
@@ -675,7 +693,7 @@ namespace de4dot.code {
 			if (cattr.ConstructorArguments.Count != 1)
 				return false;
 			if (cattr.ConstructorArguments[0].Type.ElementType != ElementType.I2 &&
-				cattr.ConstructorArguments[0].Type.FullName != "System.Runtime.CompilerServices.MethodImplOptions")
+			    cattr.ConstructorArguments[0].Type.FullName != "System.Runtime.CompilerServices.MethodImplOptions")
 				return false;
 
 			var arg = cattr.ConstructorArguments[0].Value;
@@ -683,6 +701,7 @@ namespace de4dot.code {
 				value = (short)arg;
 				return true;
 			}
+
 			if (arg is int) {
 				value = (int)arg;
 				return true;
@@ -701,7 +720,9 @@ namespace de4dot.code {
 		enum SimpleDeobFlags {
 			HasDeobfuscated = 0x1,
 		}
+
 		Dictionary<MethodDef, SimpleDeobFlags> simpleDeobfuscatorFlags = new Dictionary<MethodDef, SimpleDeobFlags>();
+
 		bool Check(MethodDef method, SimpleDeobFlags flag) {
 			if (method == null)
 				return false;
@@ -709,6 +730,7 @@ namespace de4dot.code {
 			simpleDeobfuscatorFlags[method] = oldFlags | flag;
 			return (oldFlags & flag) == flag;
 		}
+
 		bool Clear(MethodDef method, SimpleDeobFlags flag) {
 			if (method == null)
 				return false;

@@ -35,6 +35,7 @@ namespace de4dot.code.deobfuscators.CryptoObfuscator {
 		InitializedDataCreator initializedDataCreator;
 		EmbeddedResource encryptedResource;
 		byte[] constantsData;
+		Deobfuscator.Options options;
 
 		public TypeDef Type => decrypterType;
 		public EmbeddedResource Resource => encryptedResource;
@@ -44,9 +45,11 @@ namespace de4dot.code.deobfuscators.CryptoObfuscator {
 		public MethodDef DoubleDecrypter => methodR8;
 		public bool Detected => decrypterType != null;
 
-		public ConstantsDecrypter(ModuleDefMD module, InitializedDataCreator initializedDataCreator) {
+		public ConstantsDecrypter(ModuleDefMD module, InitializedDataCreator initializedDataCreator,
+			Deobfuscator.Options options) {
 			this.module = module;
 			this.initializedDataCreator = initializedDataCreator;
+			this.options = options;
 		}
 
 		public void Find() {
@@ -65,8 +68,14 @@ namespace de4dot.code.deobfuscators.CryptoObfuscator {
 		bool CheckType(TypeDef type) {
 			if (type.Methods.Count != 7)
 				return false;
-			if (type.Fields.Count < 1 || type.Fields.Count > 2)
-				return false;
+			if(options.IsVersion5()) {
+				if (type.Fields.Count < 1 || type.Fields.Count > 3)
+					return false;
+			}
+			else {
+				if (type.Fields.Count < 1 || type.Fields.Count > 2)
+					return false;
+			}
 			if (!new FieldTypes(type).All(requiredTypes))
 				return false;
 			if (!CheckMethods(type))

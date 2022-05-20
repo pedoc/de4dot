@@ -1,0 +1,22 @@
+{
+  "FileVersion": 2,
+  "Id": "004eb657-252c-4361-a2d2-2e514130c7fc",
+  "Items": [
+    {
+      "Id": "35434a5b-0cfa-4a6c-9d80-04281a52e5ea",
+      "Command": ""
+    },
+    {
+      "Id": "79daf7d2-4164-4c25-bb4a-0d82a68edbb5",
+      "Command": "E:\\Crack\\extendoffice\\KutoolsTrialReset.exe --strtyp delegate --strtok 0x0600005F --co-version 5.x"
+    },
+    {
+      "Id": "180ac4c5-5167-41c8-903f-0d3d93376a25",
+      "Command": "E:\\Crack\\extendoffice\\KutoolsTrialReset.exe --strtyp delegate --strtok 0x0600005F"
+    },
+    {
+      "Id": "5224c7a6-4ab0-479e-a686-b0a57b819255",
+      "Command": "K:\\迅雷下载\\EmEditor20.0.2\\Keygen-cleaned.exe -p un -vv --strtyp delegate --strtok 0x06000019"
+    }
+  ]
+}

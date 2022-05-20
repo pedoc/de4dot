@@ -27,7 +27,13 @@ namespace de4dot.code {
 
 		int indentLevel = 0;
 		readonly int indentSize = 0;
+#if DEBUG
+		LoggerEvent maxLoggerEvent = LoggerEvent.VeryVerbose;
+#else
 		LoggerEvent maxLoggerEvent = LoggerEvent.Info;
+#endif
+
+
 		string indentString = "";
 		Dictionary<string, bool> ignoredMessages = new Dictionary<string, bool>(StringComparer.Ordinal);
 		int numIgnoredMessages;

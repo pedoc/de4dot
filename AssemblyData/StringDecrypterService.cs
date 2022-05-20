@@ -19,6 +19,7 @@
 
 using System;
 using System.Reflection;
+using de4dot.mdecrypt;
 
 namespace AssemblyData {
 	class StringDecrypterService : AssemblyService, IStringDecrypterService {

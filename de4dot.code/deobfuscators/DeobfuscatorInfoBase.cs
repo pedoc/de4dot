@@ -18,8 +18,10 @@
 */
 
 using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace de4dot.code.deobfuscators {
+	[DebuggerDisplay("Type={Type} Name={Name}")]
 	public abstract class DeobfuscatorInfoBase : IDeobfuscatorInfo {
 		protected NameRegexOption validNameRegex;
 
