@@ -22,6 +22,7 @@ using System.Reflection;
 using System.Collections.Generic;
 using System.IO;
 using System.Xml;
+using de4dot.code;
 
 namespace AssemblyData {
 	class AssemblyResolver {
@@ -90,11 +91,19 @@ namespace AssemblyData {
 
 		Assembly LoadFile(string filename) {
 			try {
+				Logger.vv("Loading assembly from {0}", filename);
 				return Assembly.LoadFrom(filename);
 			}
-			catch (FileLoadException) {
-				// Here if eg. strong name signature validation failed and possibly other errors
-				return Assembly.Load(File.ReadAllBytes(filename));
+			catch (FileLoadException ex) {
+				Logger.e("Could not load file,Location {0},Message:{1}", filename, ex.Message);
+				try {
+					// Here if eg. strong name signature validation failed and possibly other errors
+					return Assembly.Load(File.ReadAllBytes(filename));
+				}
+				catch (FileNotFoundException ex2) {
+					Logger.e("Could not load file,Location {0},Message:{1}", filename, ex2.Message);
+					throw;
+				}
 			}
 		}
 

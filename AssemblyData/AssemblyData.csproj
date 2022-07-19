@@ -8,6 +8,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\de4dot.blocks\de4dot.blocks.csproj" />
+    <ProjectReference Include="..\de4dot.common\de4dot.common.csproj" />
     <ProjectReference Include="..\de4dot.mdecrypt\de4dot.mdecrypt.csproj" />
   </ItemGroup>
 

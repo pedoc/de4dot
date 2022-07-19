@@ -64,28 +64,28 @@ namespace de4dot.cui {
 
 		static IList<IDeobfuscatorInfo> CreateDeobfuscatorInfos() {
 			var local = new List<IDeobfuscatorInfo> {
-				new de4dot.code.deobfuscators.Unknown.DeobfuscatorInfo(),
-				new de4dot.code.deobfuscators.Agile_NET.DeobfuscatorInfo(),
-				new de4dot.code.deobfuscators.Babel_NET.DeobfuscatorInfo(),
-				new de4dot.code.deobfuscators.CodeFort.DeobfuscatorInfo(),
-				new de4dot.code.deobfuscators.CodeVeil.DeobfuscatorInfo(),
-				new de4dot.code.deobfuscators.CodeWall.DeobfuscatorInfo(),
-				new de4dot.code.deobfuscators.Confuser.DeobfuscatorInfo(),
-				new de4dot.code.deobfuscators.CryptoObfuscator.DeobfuscatorInfo(),
-				new de4dot.code.deobfuscators.DeepSea.DeobfuscatorInfo(),
-				new de4dot.code.deobfuscators.Dotfuscator.DeobfuscatorInfo(),
-				new de4dot.code.deobfuscators.dotNET_Reactor.v3.DeobfuscatorInfo(),
-				new de4dot.code.deobfuscators.dotNET_Reactor.v4.DeobfuscatorInfo(),
-				new de4dot.code.deobfuscators.Eazfuscator_NET.DeobfuscatorInfo(),
-				new de4dot.code.deobfuscators.Goliath_NET.DeobfuscatorInfo(),
-				new de4dot.code.deobfuscators.ILProtector.DeobfuscatorInfo(),
-				new de4dot.code.deobfuscators.MaxtoCode.DeobfuscatorInfo(),
-				new de4dot.code.deobfuscators.MPRESS.DeobfuscatorInfo(),
-				new de4dot.code.deobfuscators.Rummage.DeobfuscatorInfo(),
-				new de4dot.code.deobfuscators.Skater_NET.DeobfuscatorInfo(),
-				new de4dot.code.deobfuscators.SmartAssembly.DeobfuscatorInfo(),
-				new de4dot.code.deobfuscators.Spices_Net.DeobfuscatorInfo(),
-				new de4dot.code.deobfuscators.Xenocode.DeobfuscatorInfo(),
+				new code.deobfuscators.Unknown.DeobfuscatorInfo(),
+				new code.deobfuscators.Agile_NET.DeobfuscatorInfo(),
+				new code.deobfuscators.Babel_NET.DeobfuscatorInfo(),
+				new code.deobfuscators.CodeFort.DeobfuscatorInfo(),
+				new code.deobfuscators.CodeVeil.DeobfuscatorInfo(),
+				new code.deobfuscators.CodeWall.DeobfuscatorInfo(),
+				new code.deobfuscators.Confuser.DeobfuscatorInfo(),
+				new code.deobfuscators.CryptoObfuscator.DeobfuscatorInfo(),
+				new code.deobfuscators.DeepSea.DeobfuscatorInfo(),
+				new code.deobfuscators.Dotfuscator.DeobfuscatorInfo(),
+				new code.deobfuscators.dotNET_Reactor.v3.DeobfuscatorInfo(),
+				new code.deobfuscators.dotNET_Reactor.v4.DeobfuscatorInfo(),
+				new code.deobfuscators.Eazfuscator_NET.DeobfuscatorInfo(),
+				new code.deobfuscators.Goliath_NET.DeobfuscatorInfo(),
+				new code.deobfuscators.ILProtector.DeobfuscatorInfo(),
+				new code.deobfuscators.MaxtoCode.DeobfuscatorInfo(),
+				new code.deobfuscators.MPRESS.DeobfuscatorInfo(),
+				new code.deobfuscators.Rummage.DeobfuscatorInfo(),
+				new code.deobfuscators.Skater_NET.DeobfuscatorInfo(),
+				new code.deobfuscators.SmartAssembly.DeobfuscatorInfo(),
+				new code.deobfuscators.Spices_Net.DeobfuscatorInfo(),
+				new code.deobfuscators.Xenocode.DeobfuscatorInfo(),
 			};
 			var dict = new Dictionary<string, IDeobfuscatorInfo>();
 			foreach (var d in local)
@@ -106,7 +106,8 @@ namespace de4dot.cui {
 				Logger.Instance.CanIgnoreMessages = !HasEnv(showAllMessagesEnvName);
 
 				Logger.n("");
-				Logger.n("de4dot v{0}", System.Reflection.Assembly.GetExecutingAssembly().GetName().Version);
+				Logger.n("de4dot v:{0} arch:{1}", Assembly.GetExecutingAssembly().GetName().Version,IntPtr.Size==4?"x86":"x64");
+				Logger.n("runtime v:{0}",Environment.Version.ToString());
 				Logger.n("");
 
 				var options = new FilesDeobfuscator.Options();

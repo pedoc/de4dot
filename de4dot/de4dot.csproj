@@ -3,9 +3,8 @@
   <Import Project="..\De4DotCommon.props" />
 
   <PropertyGroup>
-    <!-- Only force x86 if it's .NET Framework. If it's .NET Core, we must use AnyCPU so it can be started by 32-bit and 64-bit dotnet -->
-    <PlatformTarget Condition=" '$(De4DotNetFramework)' == 'true' ">x86</PlatformTarget>
     <OutputType>Exe</OutputType>
+    <PlatformTarget>x86</PlatformTarget>
   </PropertyGroup>
 
   <ItemGroup>
