@@ -25,6 +25,7 @@ using de4dot.code;
 using de4dot.code.deobfuscators;
 using System.IO;
 using System.Reflection;
+using de4dot.common;
 
 namespace de4dot.cui {
 	class ExitException : Exception {
@@ -106,8 +107,8 @@ namespace de4dot.cui {
 				Logger.Instance.CanIgnoreMessages = !HasEnv(showAllMessagesEnvName);
 
 				Logger.n("");
-				Logger.n("de4dot v:{0} arch:{1}", Assembly.GetExecutingAssembly().GetName().Version,IntPtr.Size==4?"x86":"x64");
-				Logger.n("runtime v:{0}",Environment.Version.ToString());
+				Logger.n("de4dot v:{0}", Assembly.GetExecutingAssembly().GetName().Version);
+				Logger.n("runtime:{0}",RuntimeExtensions.GetRuntimeInfo());
 				Logger.n("");
 
 				var options = new FilesDeobfuscator.Options();

@@ -35,6 +35,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AssemblyServer-CLR40-x64", 
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "de4dot.common", "de4dot.common\de4dot.common.csproj", "{E3A6C4A7-3DE1-440D-A47B-8212E5C25093}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "other", "other", "{CC51654F-A1D0-41F9-B39C-188BB47DA387}"
+	ProjectSection(SolutionItems) = preProject
+		De4DotCommon.props = De4DotCommon.props
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU

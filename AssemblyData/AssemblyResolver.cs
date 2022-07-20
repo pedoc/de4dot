@@ -23,6 +23,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Xml;
 using de4dot.code;
+using de4dot.common;
+using dnlib.DotNet;
 
 namespace AssemblyData {
 	class AssemblyResolver {
@@ -94,13 +96,21 @@ namespace AssemblyData {
 				Logger.vv("Loading assembly from {0}", filename);
 				return Assembly.LoadFrom(filename);
 			}
+			catch (BadImageFormatException) {
+				var assemblyName = AssemblyName.GetAssemblyName(filename);
+				var currentPA = RuntimeExtensions.GetEntryAssemblyProcessorArchitecture();
+				if (assemblyName.ProcessorArchitecture !=currentPA ) {
+					Logger.e("Assembly processor architecture mismatch,target assembly:{0},current process:{1}",assemblyName.ProcessorArchitecture.ToString(),currentPA.ToString());
+				}
+				throw;
+			}
 			catch (FileLoadException ex) {
 				Logger.e("Could not load file,Location {0},Message:{1}", filename, ex.Message);
 				try {
 					// Here if eg. strong name signature validation failed and possibly other errors
 					return Assembly.Load(File.ReadAllBytes(filename));
 				}
-				catch (FileNotFoundException ex2) {
+				catch (FileLoadException ex2) {
 					Logger.e("Could not load file,Location {0},Message:{1}", filename, ex2.Message);
 					throw;
 				}
